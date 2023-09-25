@@ -224,7 +224,7 @@ class Automator:
         #self.data_htas.to_csv('htas_grande.csv', index= False)
 
     def of_to_df(self):
-        col_names = ['Día Productivo', 'Turno', 'Máquina', 'OF', 'Cod.Operación', 'cod_producto', 'desc_producto', 'inicio', 'Fin', 'Num OFs', 'Tiempo Plan.', 'Tiempo Plan.Proceso', 'Tiempo Real', 'Sub Área']
+        col_names = ['Día Productivo', 'Turno', 'Máquina', 'OF', 'Cod.Operación', 'cod_producto', 'desc_producto','operación','inicio', 'Fin', 'Num OFs', 'Tiempo Plan.', 'Tiempo Plan.Proceso', 'Tiempo Real', 'Sub Área']
         self.data_ofs = pd.read_csv(io.StringIO(self.data_ofs.replace('\r', '\n')), delimiter='\t', header=None, names = col_names, index_col=0)
         #self.data_ofs.to_csv('ofs_grande.csv', index= False)
 
