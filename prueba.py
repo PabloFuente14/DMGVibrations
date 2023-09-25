@@ -1,7 +1,7 @@
 import pandas as pd
 import plotly.express as px
 
-df1 = pd.read_csv('horaYhtaCombined.csv')
+df1 = pd.read_csv('endpoint_datasheets/horaYhtaCombined.csv')
 
 
 def figura_1():
@@ -18,4 +18,4 @@ def figura_3():
     fig.show()
     
     
-figura_3()
+figura_1()
