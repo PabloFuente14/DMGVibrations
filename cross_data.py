@@ -16,19 +16,21 @@ def cruce_valor_y_hta(df1,df2):
     return df_combined
 
 
-
-
 def cruce_hta_valor_of(df_combined, df3):
     df3['inicio'] = pd.to_datetime(df3['inicio'], format ='%d/%m/%Y %H:%M:%S')
-    df3['fin'] = pd.to_datetime(df3['fin'], format= '%d/%m/%Y %H:%M:%S')
+    df3['Fin'] = pd.to_datetime(df3['Fin'], format= '%d/%m/%Y %H:%M:%S')
     
+    result = pd.merge_asof(df_combined,df3, left_on = 'Date', right_on='Fin')
     
-    return df3
+    return result
 
 
 
 
 df3 = pd.read_csv('endpoint_datasheets/ofs_grande.csv')
+df_combined = pd.read_csv('endpoint_datasheets/horaYhtaCombined.csv')
+
+df_comcombined = cruce_hta_valor_of(df_combined,df3)
 
 
 
