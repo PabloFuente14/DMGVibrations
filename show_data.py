@@ -40,6 +40,5 @@ def interactive_dashboard():
     if __name__ == '__main__':
         app.run_server(debug=True)
         
-        
-#plot_op1()        
+       
 interactive_dashboard()
