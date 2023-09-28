@@ -1,5 +1,6 @@
 import pandas as pd
 from datetime import datetime
+import pandasql as psql
 
 def cruce_valor_y_hta(df1,df2):
     df1['Date'] = pd.to_datetime(df1['Date'], format = '%Y-%m-%d %H:%M:%S' )
@@ -15,16 +16,20 @@ def cruce_valor_y_hta(df1,df2):
 
     return df_combined
 
-
 def cruce_hta_valor_of(df_combined, df3):
-    df3['inicio'] = pd.to_datetime(df3['inicio'], format ='%d/%m/%Y %H:%M:%S')
-    df3['Fin'] = pd.to_datetime(df3['Fin'], format= '%d/%m/%Y %H:%M:%S')
+    df_combined['Date'] = pd.to_datetime(df_combined['Date'])
+    df3['inicio'] = pd.to_datetime(df3['inicio'], format='%d/%m/%Y %H:%M:%S')
+    df3['Fin'] = pd.to_datetime(df3['Fin'], format='%d/%m/%Y %H:%M:%S')
     
-    result = pd.merge_asof(df_combined,df3, left_on = 'Date', right_on='Fin')
+    query = '''
+    SELECT *
+    FROM df_combined
+    LEFT JOIN df3
+    ON df_combined.Date BETWEEN df3.inicio AND df3.Fin
+    '''
     
-    return result
-
-
+    final_df = psql.sqldf(query, locals())
+    return final_df
 
 
 df3 = pd.read_csv('endpoint_datasheets/ofs_grande.csv')
