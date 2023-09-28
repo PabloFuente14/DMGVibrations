@@ -15,7 +15,7 @@ def cruce_valor_y_hta(df1,df2):
     df_combined.reset_index(drop=True, inplace=True)
 
     return df_combined
-
+#sancho
 def cruce_hta_valor_of(df_combined, df3):
     df_combined['Date'] = pd.to_datetime(df_combined['Date'])
     df3['inicio'] = pd.to_datetime(df3['inicio'], format='%d/%m/%Y %H:%M:%S')
