@@ -4,6 +4,7 @@ from dash import html
 from dash.dependencies import Input, Output
 import plotly.express as px
 import pandas as pd
+from flask import Flask
 
 def interactive_dashboard():
     df_combined = pd.read_csv('endpoint_datasheets/horaYhtaCombined.csv') 

@@ -1,6 +1,7 @@
 import pandas as pd
 from datetime import datetime
 import pandasql as psql
+import re
 
 def cruce_valor_y_hta(df1,df2):
     df1['Date'] = pd.to_datetime(df1['Date'], format = '%Y-%m-%d %H:%M:%S' )
@@ -17,6 +18,14 @@ def cruce_valor_y_hta(df1,df2):
     return df_combined
 #sancho
 def cruce_hta_valor_of(df_combined, df3):
+    
+    #nested function
+    def extract_op_code(value):
+        if pd.isna(value) or not isinstance(value, str): #comprobamos si el valor es NaN o no es un string
+            return None
+        match = re.search(r'OP(\d{2})', value) #buscamos el patron definido de OP + dos dígitos
+        return match.group(0) if match else None #return the entire match si hay coincidencias
+    
     df_combined['Date'] = pd.to_datetime(df_combined['Date'])
     df3['inicio'] = pd.to_datetime(df3['inicio'], format='%d/%m/%Y %H:%M:%S')
     df3['Fin'] = pd.to_datetime(df3['Fin'], format='%d/%m/%Y %H:%M:%S')
@@ -29,6 +38,8 @@ def cruce_hta_valor_of(df_combined, df3):
     '''
     
     final_df = psql.sqldf(query, locals())
+    final_df = final_df[['Date', 'Value1', 'Herramienta','OF', 'Cod.Operación','cod_producto','operación']]
+    final_df['operación'] = final_df['operación'].apply(extract_op_code)
     return final_df
 
 
