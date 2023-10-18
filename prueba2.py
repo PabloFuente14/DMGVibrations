@@ -1,45 +1,32 @@
-import dash
-import dash_core_components as dcc
-import dash_html_components as html
-from dash.dependencies import Input, Output
-import plotly.express as px
+# Import packages
+from dash import Dash, html, dash_table, dcc, callback, Output, Input
 import pandas as pd
+import plotly.express as px
 
-# Sample DataFrame
-df = pd.DataFrame({
-    'A': range(1, 101),
-    'B': range(101, 201),
-    'C': range(201, 301),
-    'D': range(301, 401),
-    'E': range(401, 501),
-    'F': range(501, 601)
-})
+# Incorporate data
+df = pd.read_csv('endpoint_datasheets/horaYhtaCombined.csv')
 
-# Initialize Dash app
-app = dash.Dash(__name__)
+# Initialize the app
+app = Dash(__name__)
 
+# App layout
 app.layout = html.Div([
-    dcc.Dropdown(
-        id='xaxis-column',
-        options=[{'label': i, 'value': i} for i in df.columns],
-        value='A'
-    ),
-    dcc.Dropdown(
-        id='yaxis-column',
-        options=[{'label': i, 'value': i} for i in df.columns],
-        value='B'
-    ),
-    dcc.Graph(id='scatter-plot')
+    html.Div(children='My First App with Data, Graph, and Controls'),
+    html.Hr(),
+    dcc.RadioItems(options=['pop', 'lifeExp', 'gdpPercap'], value='lifeExp', id='controls-and-radio-item'),
+    dash_table.DataTable(data=df.to_dict('records'), page_size=6),
+    dcc.Graph(figure={}, id='controls-and-graph')
 ])
 
-@app.callback(
-    Output('scatter-plot', 'figure'),
-    [Input('xaxis-column', 'value'),
-     Input('yaxis-column', 'value')]
+# Add controls to build the interaction
+@callback(
+    Output(component_id='controls-and-graph', component_property='figure'),
+    Input(component_id='controls-and-radio-item', component_property='value')
 )
-def update_graph(xaxis_column, yaxis_column):
-    fig = px.scatter(df, x=xaxis_column, y=yaxis_column)
+def update_graph(col_chosen):
+    fig = px.histogram(df, x='continent', y=col_chosen, histfunc='avg')
     return fig
 
+# Run the app
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run(debug=True)

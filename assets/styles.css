@@ -1,0 +1,29 @@
+#titulo {
+    text-align: center;
+    color: #b78f92;
+    font-family:Verdana, Geneva, Tahoma, sans-serif ;
+    font-style: italic;
+}
+
+
+#button-container {
+    display: flex;
+    justify-content: center;
+}
+
+
+.custom-button {
+    margin: 70px;
+    padding: 50px 50px;
+    font-size : 18px;
+    background-color:#0c0e10;
+    color: white;
+    border:none;
+    cursor: pointer;
+    transition: background-color 0.3s ease; 
+}
+
+.custom-button:hover {
+    background-color: #3600b3;
+}
+

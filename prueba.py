@@ -1,29 +1,48 @@
+import dash
+from dash import Output, Input, dcc, html
 import pandas as pd
 import plotly.express as px
-import re
 
-df1 = pd.read_csv('endpoint_datasheets/horaYhtaCombined.csv')
+df_combined = pd.read_csv('endpoint_datasheets/horaYhtaCombined.csv')
+dropdown_options = [{'label': tool, 'value': tool} for tool in df_combined['Herramienta'].unique()]
 
-#alternative plot
-def figura_1():
-    fig = px.scatter(df1, x='Date', y='Value1', color='Herramienta')
-    fig.show()   
-#figura_1()
+app = dash.Dash(__name__)
 
-def extract_op_code(value):
-    if pd.isna(value) or not isinstance(value, str): #comprobamos si el valor es NaN o no es un string
-        return None
-    match = re.search(r'OP(\d{2})', value) #buscamos el patron definido de OP + dos dígitos
-    return match.group(0) if match else None #return the entire match si hay coincidencias
+app.layout = html.Div([
+    html.H1("Visualizar los datos capturados", id='titulo'),
+    html.Button('Herramienta', id='btn-hta', n_clicks=0),
+    dcc.Dropdown(
+        id='tool-dropdown',
+        options=[{'label': 'General', 'value': 'General'}] + dropdown_options,
+        value='General',
+        style={'display': 'none'}
+    ),
+    dcc.Graph(id='hta-graph', style={'display': 'none'})
+])
 
-df2 = pd.read_csv('endpoint_datasheets/valor_hora_hta_of_grande.csv')
-df2 = df2[['Date', 'Value1', 'Herramienta','OF', 'Cod.Operación','cod_producto','operación']]
+@app.callback(
+    [Output('tool-dropdown', 'style'),
+     Output('hta-graph', 'style')],
+    [Input('btn-hta', 'n_clicks')]
+)
+def display_dropdown_and_graph(n_clicks):
+    if n_clicks > 0:
+        return {'display': 'block'}, {'display': 'block'}
+    else:
+        return {'display': 'none'}, {'display': 'none'}
 
-df2['operación'] = df2['operación'].apply(extract_op_code)
+@app.callback(
+    Output('hta-graph', 'figure'),
+    [Input('tool-dropdown', 'value')]
+)
+def update_plot(selected_tool):
+    if selected_tool == 'General':
+        fig = px.line(df_combined, x='Date', y='Value1', color='Herramienta')
+    else:
+        filtered_df = df_combined[df_combined['Herramienta'] == selected_tool]
+        fig = px.line(filtered_df, x='Date', y='Value1', color='Herramienta')
+    fig.update_layout(height=800)
+    return fig
 
-
-
-
-print("Hola")
-#print(df2['OF'].isna().sum())
-#print(df2['operación'].unique())
+if __name__ == '__main__':
+    app.run_server(debug=True)

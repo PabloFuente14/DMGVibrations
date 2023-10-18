@@ -1,12 +1,10 @@
 from asyncio import sleep
 import pyautogui
-import openpyxl
 import time
 import clipboard
 import pandas as pd
 import time
 from datetime import datetime
-import shlex
 import re
 import io
 

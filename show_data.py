@@ -5,6 +5,7 @@ from dash.dependencies import Input, Output
 import plotly.express as px
 import pandas as pd
 from flask import Flask
+import extract_data
 
 def interactive_dashboard():
     df_combined = pd.read_csv('endpoint_datasheets/horaYhtaCombined.csv') 
@@ -15,7 +16,7 @@ def interactive_dashboard():
     dropdown_options = [{'label': tool, 'value': tool} for tool in unique_tools]
 
     app.layout = html.Div([ # Div that contains the elemtnts inside the list 
-        html.H1("Visualización datos capturados entre 5-5-2023 y 5-6-2023", style={'textAlign': 'center', 'color': '#7FDBFF'}),
+        html.H1("Visualización datos capturados entre {extract_data.self_inicio} y 5-6-2023", style={'textAlign': 'center', 'color': '#7FDBFF'}),
         dcc.Dropdown(
             id='tool-dropdown',
             options=[{'label': 'General', 'value': 'General'}] + dropdown_options,
