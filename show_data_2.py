@@ -14,8 +14,7 @@ df = pd.read_csv('endpoint_datasheets/valor_hora_hta_of_grande.csv')
 dropdown_options_hta = [{'label':tool, 'value':tool} for tool in df_combined['Herramienta'].unique()]
 df =df.dropna(subset = ['Cod.Operación'])
 dropdown_options_cod_op =[{'label':cod_op, 'value':cod_op} for cod_op in df['Cod.Operación'].unique()]
-df = df.dropna(subset= ['cod_prod'])
-dropdown_options_cod_prod = [{'label':cod_prod, 'value':cod_prod} for cod_prod in df['cod_prod'].unique()]
+dropdown_options_cod_prod = [{'label':cod_prod, 'value':cod_prod} for cod_prod in df['cod_producto'].unique()]
 
 
 fecha_inicio = "05/05/2023"
@@ -49,9 +48,11 @@ app.layout = html.Div([
     dcc.Graph(id= 'cod_op-graph', style={'display':'none'}),
     dcc.Dropdown(
         id = 'cod_prod-dropdown',
-        options = '##################################################### voy aquiiiiii',
-        
-    )
+        options = [{'label': 'General', 'value': 'General'}]+ dropdown_options_cod_prod,
+        style= {'display': 'none'},
+        value = 'General'
+    ),
+    dcc.Graph (id = 'cod_prod-graph', style= {'display': 'none'})
     
 ], style={'backgroundColor': '#f4f4f4'})
 
@@ -60,21 +61,26 @@ app.layout = html.Div([
     [Output('tool-dropdown', 'style'),
      Output('hta-graph', 'style'),
      Output('cod_op-dropdown', 'style'),
-     Output('cod_op-graph', 'style')],
+     Output('cod_op-graph', 'style'),
+     Output('cod_prod-dropdown', 'style'),
+     Output('cod_prod-graph', 'style')],
     [Input('btn-hta', 'n_clicks'),
-     Input('btn-cod_op', 'n_clicks')]
+     Input('btn-cod_op', 'n_clicks'),
+     Input('btn-cod_prod', 'n_clicks')]
 )
-def display_dropdown_and_graph(n1, n2):
-    ctx = dash.callback_context #context of wich input trigered the callback
+def display_dropdown_and_graph(n1, n2, n3):  
+    ctx = dash.callback_context
     if not ctx.triggered:
         raise PreventUpdate
 
     button_id = ctx.triggered[0]['prop_id'].split('.')[0]
     
     if button_id == 'btn-hta':
-        return {'display': 'block'}, {'display': 'block'}, {'display': 'none'}, {'display': 'none'}
+        return {'display': 'block'}, {'display': 'block'}, {'display': 'none'}, {'display': 'none'}, {'display': 'none'}, {'display': 'none'}
     elif button_id == 'btn-cod_op':
-        return {'display': 'none'}, {'display': 'none'}, {'display': 'block'}, {'display': 'block'}
+        return {'display': 'none'}, {'display': 'none'}, {'display': 'block'}, {'display': 'block'}, {'display': 'none'}, {'display': 'none'}
+    elif button_id == 'btn-cod_prod':  # Add this block
+        return {'display': 'none'}, {'display': 'none'}, {'display': 'none'}, {'display': 'none'}, {'display': 'block'}, {'display': 'block'}
     else:
         raise PreventUpdate
 
@@ -104,6 +110,20 @@ def update_plot_hta(selected_tool):
         fig = px.line(filtered_df, x='Date', y='Value1', color='Herramienta')
     fig.update_layout(height=500)
     return fig
+
+@app.callback(
+    Output('cod_prod-graph', 'figure'),
+    [Input('cod_prod-dropdown', 'value')]
+)
+def update_plot_cod_prod(selected_prod):
+    if selected_prod == 'General':
+        fig = px.line(df, x='Date', y='Value1', color='cod_producto')
+    else:
+        filtered_df = df[df['cod_producto'] == selected_prod]
+        fig = px.line(filtered_df, x='Date', y='Value1', color='cod_producto')
+    fig.update_layout(height=500)
+    return fig
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)
