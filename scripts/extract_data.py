@@ -11,6 +11,7 @@ import io
 
 class Automator:
 
+
     def __init__(self):
         self.inicio = None
         self.fin = None
